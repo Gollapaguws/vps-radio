@@ -1,0 +1,12 @@
+.env
+recordings/
+node_modules/
+api/node_modules/
+web/node_modules/
+dist/
+api/dist/
+web/dist/
+*.log
+.DS_Store
+ssl/
+certbot/
