@@ -20,7 +20,7 @@
 | 11 | React app scaffold | ✅ Done | web/src/App.tsx, Player.tsx, useNowPlaying.ts, vite.config.ts |
 | 12 | Basic player CSS | ✅ Done | styles/globals.css (design tokens, dark mode), styles/player.css (full UI) |
 | 13 | `README.md` | ✅ Done | Full quick start, env var table, deploy guide, project structure |
-| 14 | Smoke test | 🔨 In Progress | Verifying all files look correct |
+| 14 | Smoke test | ✅ Done | All files verified, icecast.xml fixed (invalid deny-ip removed), radio.liq syntax corrected for Liq 2.x |
 
 ## Bugs Found
 

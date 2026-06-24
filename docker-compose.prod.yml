@@ -6,7 +6,9 @@ services:
 
   # ── Icecast2 stream server ─────────────────────────────────────────────────
   icecast:
-    image: ghcr.io/ushnisha/icecast2:latest
+    build:
+      context: ./config/icecast
+      dockerfile: Dockerfile
     restart: always
     environment:
       - ICECAST_SOURCE_PASSWORD=${ICECAST_SOURCE_PASSWORD}
@@ -21,7 +23,7 @@ services:
       - STATION_GENRE=${STATION_GENRE}
       - STATION_URL=https://${DOMAIN}
     volumes:
-      - ./config/icecast.xml:/etc/icecast2/icecast.xml:ro
+      - ./config/icecast/icecast.xml:/etc/icecast2/icecast.xml.template:ro
       - icecast_logs:/var/log/icecast2
     # Port 8000 intentionally NOT exposed to the host — only Nginx reaches it
     # via the internal radio network. iptables rules in setup-vps.sh block

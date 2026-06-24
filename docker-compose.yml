@@ -6,7 +6,9 @@ services:
 
   # ── Icecast2 stream server ─────────────────────────────────────────────────
   icecast:
-    image: ghcr.io/ushnisha/icecast2:latest
+    build:
+      context: ./config/icecast
+      dockerfile: Dockerfile
     restart: unless-stopped
     environment:
       - ICECAST_SOURCE_PASSWORD=${ICECAST_SOURCE_PASSWORD}
@@ -21,7 +23,7 @@ services:
       - STATION_GENRE=${STATION_GENRE:-Various}
       - STATION_URL=${STATION_URL:-http://localhost}
     volumes:
-      - ./config/icecast.xml:/etc/icecast2/icecast.xml:ro
+      - ./config/icecast/icecast.xml:/etc/icecast2/icecast.xml.template:ro
       - icecast_logs:/var/log/icecast2
     # Port 8000 NOT exposed to the host in production — only Nginx can reach it.
     # Expose for local dev/testing only:
