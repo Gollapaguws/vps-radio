@@ -63,6 +63,9 @@ radio = map_metadata(
   radio
 )
 
+# crossfade can be fallible briefly during transitions — ensure infallible output
+radio = mksafe(radio)
+
 # ─── Fallback recording (continuous, rotates hourly) ─────────────────────────
 # Records the fallback stream so DJs can review what was aired.
 # Files land in /recordings and are picked up by the API archiver.
