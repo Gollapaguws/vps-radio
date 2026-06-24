@@ -1,0 +1,22 @@
+/* visualizer.css — waveform bar visualizer */
+
+.visualizer {
+  width: 100%;
+  height: 64px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+}
+
+.visualizer-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visualizer {
+    display: none;
+  }
+}
