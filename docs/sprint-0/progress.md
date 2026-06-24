@@ -16,11 +16,11 @@
 | 7 | VPS setup script | ✅ Done | scripts/setup-vps.sh — Docker, ufw, fail2ban, iptables |
 | 8 | SSL init script | ✅ Done | scripts/init-ssl.sh — Certbot, SSL nginx config, renewal cron |
 | 9 | `docker-compose.prod.yml` | ✅ Done | Production compose — restart:always, resource limits, no host port 8000 |
-| 10 | Node.js API scaffold | 🔨 In Progress | |
-| 11 | React app scaffold | 🔨 In Progress | |
-| 12 | Basic player CSS | 🔨 In Progress | |
-| 13 | `README.md` | ⬜ Not started | |
-| 14 | Smoke test | ⬜ Not started | |
+| 10 | Node.js API scaffold | ✅ Done | api/src/index.ts, routes/health.ts, now-playing.ts, version.ts, shows.ts |
+| 11 | React app scaffold | ✅ Done | web/src/App.tsx, Player.tsx, useNowPlaying.ts, vite.config.ts |
+| 12 | Basic player CSS | ✅ Done | styles/globals.css (design tokens, dark mode), styles/player.css (full UI) |
+| 13 | `README.md` | ✅ Done | Full quick start, env var table, deploy guide, project structure |
+| 14 | Smoke test | 🔨 In Progress | Verifying all files look correct |
 
 ## Bugs Found
 
