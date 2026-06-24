@@ -33,9 +33,8 @@ fallback_playlist = playlist(
 fallback = mksafe(fallback_playlist)
 
 # ─── Live source (desktop DJs: BUTT, Mixxx, Darkice) ────────────────────────
-# Icecast handles the /live mount; Liquidsoap pushes /fallback.
-# When a DJ connects to /live directly, Icecast's fallback-override takes them
-# live automatically — Liquidsoap only manages /fallback.
+# The /live mount is fed directly by DJs via Icecast.
+# Liquidsoap manages /fallback; Icecast fallback-override handles the switch.
 
 # ─── Smooth crossfade between tracks ─────────────────────────────────────────
 
@@ -62,8 +61,9 @@ radio = map_metadata(
   radio
 )
 
-# ─── FFmpeg recording (writes to /recordings, cleaned up by cron) ────────────
-# Uses mp3 encoder; requires liquidsoap-ffmpeg or built-in mp3 support
+# ─── Fallback recording (continuous, rotates hourly) ─────────────────────────
+# Records the fallback stream so DJs can review what was aired.
+# Files land in /recordings and are picked up by the API archiver.
 
 ignore(
   output.file(
