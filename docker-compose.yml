@@ -54,9 +54,11 @@ services:
       - STATION_GENRE=${STATION_GENRE:-Various}
     volumes:
       - ./config/radio.liq:/etc/liquidsoap/radio.liq:ro
+      - ./config/liquidsoap-entrypoint.sh:/entrypoint.sh:ro
       - ./assets/playlist:/music:ro
       - recordings:/recordings
-    command: ["/etc/liquidsoap/radio.liq"]
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    command: []
     networks:
       - radio
 
