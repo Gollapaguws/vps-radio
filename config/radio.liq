@@ -12,13 +12,13 @@ settings.log.level.set(3)
 
 # ─── Icecast output credentials (from environment) ───────────────────────────
 
-icecast_host  = getenv("ICECAST_HOSTNAME")
-icecast_port  = int_of_string(getenv("ICECAST_PORT"))
-icecast_pass  = getenv("ICECAST_SOURCE_PASSWORD")
-station_name  = getenv("STATION_NAME")
-station_desc  = getenv("STATION_DESCRIPTION")
-station_url   = getenv("STATION_URL")
-station_genre = getenv("STATION_GENRE")
+icecast_host  = getenv(default="icecast",            "ICECAST_HOSTNAME")
+icecast_port  = int_of_string(getenv(default="8000", "ICECAST_PORT"))
+icecast_pass  = getenv(default="",                   "ICECAST_SOURCE_PASSWORD")
+station_name  = getenv(default="VPS Radio",          "STATION_NAME")
+station_desc  = getenv(default="Live internet radio","STATION_DESCRIPTION")
+station_url   = getenv(default="http://localhost",   "STATION_URL")
+station_genre = getenv(default="Various",            "STATION_GENRE")
 
 # ─── Fallback playlist ───────────────────────────────────────────────────────
 # Reads all MP3s from /music (mapped from assets/playlist in compose)
