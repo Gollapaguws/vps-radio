@@ -1,0 +1,85 @@
+<icecast>
+  <location>VPS Radio</location>
+  <admin>${ICECAST_ADMIN_USER}@localhost</admin>
+
+  <limits>
+    <clients>${ICECAST_MAX_LISTENERS}</clients>
+    <sources>5</sources>
+    <queue-size>524288</queue-size>
+    <client-timeout>30</client-timeout>
+    <header-timeout>15</header-timeout>
+    <source-timeout>10</source-timeout>
+    <burst-on-connect>1</burst-on-connect>
+    <burst-size>65535</burst-size>
+  </limits>
+
+  <authentication>
+    <!-- Source password used by Liquidsoap and desktop DJs (BUTT/Mixxx) -->
+    <source-password>${ICECAST_SOURCE_PASSWORD}</source-password>
+    <!-- Relay password for stream relay setups -->
+    <relay-password>${ICECAST_RELAY_PASSWORD}</relay-password>
+    <!-- Admin web interface credentials -->
+    <admin-user>${ICECAST_ADMIN_USER}</admin-user>
+    <admin-password>${ICECAST_ADMIN_PASSWORD}</admin-password>
+  </authentication>
+
+  <hostname>${ICECAST_HOSTNAME}</hostname>
+
+  <listen-socket>
+    <port>${ICECAST_PORT}</port>
+    <!-- Bind to all interfaces; Nginx controls external access -->
+    <bind-address>0.0.0.0</bind-address>
+  </listen-socket>
+
+  <mount type="normal">
+    <mount-name>/live</mount-name>
+    <max-listeners>${ICECAST_MAX_LISTENERS}</max-listeners>
+    <stream-name>${STATION_NAME} — Live</stream-name>
+    <stream-description>${STATION_DESCRIPTION}</stream-description>
+    <stream-url>${STATION_URL}</stream-url>
+    <genre>${STATION_GENRE}</genre>
+    <!-- Allow cross-origin embedding -->
+    <http-headers>
+      <header name="Access-Control-Allow-Origin" value="*" />
+      <header name="Access-Control-Allow-Headers" value="Origin, Accept" />
+    </http-headers>
+    <!-- Fall through to /fallback when no DJ is connected -->
+    <fallback-mount>/fallback</fallback-mount>
+    <fallback-override>1</fallback-override>
+  </mount>
+
+  <mount type="normal">
+    <mount-name>/fallback</mount-name>
+    <max-listeners>${ICECAST_MAX_LISTENERS}</max-listeners>
+    <stream-name>${STATION_NAME} — Auto</stream-name>
+    <stream-description>${STATION_DESCRIPTION} (auto)</stream-description>
+    <stream-url>${STATION_URL}</stream-url>
+    <genre>${STATION_GENRE}</genre>
+    <hidden>0</hidden>
+    <http-headers>
+      <header name="Access-Control-Allow-Origin" value="*" />
+      <header name="Access-Control-Allow-Headers" value="Origin, Accept" />
+    </http-headers>
+  </mount>
+
+  <paths>
+    <basedir>/usr/share/icecast2</basedir>
+    <logdir>/var/log/icecast2</logdir>
+    <webroot>/usr/share/icecast2/web</webroot>
+    <adminroot>/usr/share/icecast2/admin</adminroot>
+    <pidfile>/var/run/icecast2/icecast.pid</pidfile>
+    <!-- IP-level blocking of port 8000 is handled by iptables in setup-vps.sh -->
+  </paths>
+
+  <logging>
+    <accesslog>access.log</accesslog>
+    <errorlog>error.log</errorlog>
+    <!-- 1=error 2=warn 3=info 4=debug -->
+    <loglevel>3</loglevel>
+    <logsize>10000</logsize>
+  </logging>
+
+  <security>
+    <chroot>0</chroot>
+  </security>
+</icecast>

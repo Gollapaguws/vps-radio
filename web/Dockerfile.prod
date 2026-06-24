@@ -1,0 +1,20 @@
+# web/Dockerfile.prod — production (built static files served by http-server)
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# ── Runtime: minimal static file server ───────────────────────────────────
+FROM node:20-alpine
+
+RUN npm install -g http-server@14
+WORKDIR /app
+COPY --from=builder /app/dist ./dist
+
+USER node
+EXPOSE 3000
+
+CMD ["http-server", "dist", "-p", "3000", "--proxy", "http://localhost:3000?", "-c-1"]

@@ -1,0 +1,142 @@
+# docker-compose.yml — VPS Radio development stack
+# Usage: docker compose up -d
+# See .env.example for required environment variables
+
+services:
+
+  # ── Icecast2 stream server ─────────────────────────────────────────────────
+  icecast:
+    build:
+      context: ./config/icecast
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - ICECAST_SOURCE_PASSWORD=${ICECAST_SOURCE_PASSWORD}
+      - ICECAST_RELAY_PASSWORD=${ICECAST_RELAY_PASSWORD}
+      - ICECAST_ADMIN_PASSWORD=${ICECAST_ADMIN_PASSWORD}
+      - ICECAST_ADMIN_USER=${ICECAST_ADMIN_USER}
+      - ICECAST_HOSTNAME=${ICECAST_HOSTNAME:-localhost}
+      - ICECAST_PORT=${ICECAST_PORT:-8000}
+      - ICECAST_MAX_LISTENERS=${ICECAST_MAX_LISTENERS:-100}
+      - STATION_NAME=${STATION_NAME:-VPS Radio}
+      - STATION_DESCRIPTION=${STATION_DESCRIPTION:-Live internet radio}
+      - STATION_GENRE=${STATION_GENRE:-Various}
+      - STATION_URL=${STATION_URL:-http://localhost}
+    volumes:
+      - ./config/icecast/icecast.xml:/etc/icecast2/icecast.xml.template:ro
+      - icecast_logs:/var/log/icecast2
+    # Port 8000 NOT exposed to the host in production — only Nginx can reach it.
+    # Expose for local dev/testing only:
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/status.xsl"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - radio
+
+  # ── Liquidsoap (fallback playlist + recording) ────────────────────────────
+  liquidsoap:
+    image: savonet/liquidsoap:v2.3.0
+    restart: unless-stopped
+    depends_on:
+      icecast:
+        condition: service_healthy
+    environment:
+      - ICECAST_HOSTNAME=icecast
+      - ICECAST_PORT=${ICECAST_PORT:-8000}
+      - ICECAST_SOURCE_PASSWORD=${ICECAST_SOURCE_PASSWORD}
+      - STATION_NAME=${STATION_NAME:-VPS Radio}
+      - STATION_DESCRIPTION=${STATION_DESCRIPTION:-Live internet radio}
+      - STATION_URL=${STATION_URL:-http://localhost}
+      - STATION_GENRE=${STATION_GENRE:-Various}
+    volumes:
+      - ./config/radio.liq:/etc/liquidsoap/radio.liq:ro
+      - ./assets/playlist:/music:ro
+      - recordings:/recordings
+    command: ["/etc/liquidsoap/radio.liq"]
+    networks:
+      - radio
+
+  # ── Node.js Fastify API ────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      icecast:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - API_PORT=${API_PORT:-4000}
+      - API_SECRET=${API_SECRET}
+      - ICECAST_HOSTNAME=icecast
+      - ICECAST_PORT=${ICECAST_PORT:-8000}
+      - ICECAST_ADMIN_USER=${ICECAST_ADMIN_USER}
+      - ICECAST_ADMIN_PASSWORD=${ICECAST_ADMIN_PASSWORD}
+      - STATION_NAME=${STATION_NAME:-VPS Radio}
+      - R2_ACCOUNT_ID=${R2_ACCOUNT_ID:-}
+      - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID:-}
+      - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY:-}
+      - R2_BUCKET=${R2_BUCKET:-vps-radio-archive}
+      - R2_PUBLIC_URL=${R2_PUBLIC_URL:-}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+    ports:
+      - "127.0.0.1:4000:4000"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:4000/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+    networks:
+      - radio
+
+  # ── React web player (Vite dev server) ────────────────────────────────────
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      - VITE_API_URL=http://localhost/api
+      - VITE_STREAM_URL=http://localhost/stream/live
+      - VITE_STATION_NAME=${STATION_NAME:-VPS Radio}
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    networks:
+      - radio
+
+  # ── Nginx reverse proxy ────────────────────────────────────────────────────
+  nginx:
+    image: nginx:1.25-alpine
+    restart: unless-stopped
+    depends_on:
+      - icecast
+      - api
+      - web
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    networks:
+      - radio
+
+volumes:
+  icecast_logs:
+  recordings:
+
+networks:
+  radio:
+    driver: bridge

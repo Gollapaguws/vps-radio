@@ -10,3 +10,8 @@ web/dist/
 .DS_Store
 ssl/
 certbot/
+
+# Fallback playlist MP3s (large binary files — add manually on server)
+assets/playlist/*.mp3
+assets/playlist/*.flac
+assets/playlist/*.ogg
