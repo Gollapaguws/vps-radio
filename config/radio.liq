@@ -66,20 +66,17 @@ radio = map_metadata(
 # crossfade can be fallible briefly during transitions — ensure infallible output
 radio = mksafe(radio)
 
-# ─── Fallback recording (continuous, rotates hourly) ─────────────────────────
-# Records the fallback stream so DJs can review what was aired.
-# Files land in /recordings and are picked up by the API archiver.
-
-ignore(
-  output.file(
-    %mp3(bitrate=192, stereo=true),
-    fallible=true,
-    reopen_on_metadata=fun(_) -> false,
-    reopen_delay=3600.0,
-    "/recordings/%Y-%m-%dT%H-%M-%S-fallback.mp3",
-    radio
-  )
-)
+# ─── Fallback recording (disabled — enable when /recordings mount is confirmed)
+# ignore(
+#   output.file(
+#     %mp3(bitrate=192, stereo=true),
+#     fallible=true,
+#     reopen_on_metadata=fun(_) -> false,
+#     reopen_delay=3600.0,
+#     "/recordings/%Y-%m-%dT%H-%M-%S-fallback.mp3",
+#     radio
+#   )
+# )
 
 # ─── Output: push fallback stream to Icecast /fallback mount ─────────────────
 
