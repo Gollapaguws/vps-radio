@@ -7,12 +7,13 @@ const ICECAST_PASS = process.env.ICECAST_SOURCE_PASSWORD ?? ''
 const API_SECRET   = process.env.API_SECRET ?? ''
 
 export async function broadcastRoute(app: FastifyInstance) {
-  app.get('/broadcast', { websocket: true }, (socket, request) => {
+  app.get('/broadcast', { websocket: true }, (connection, request) => {
+    const ws    = connection.socket
     const token = (request.query as Record<string, string>).token ?? ''
 
     if (!API_SECRET || token !== API_SECRET) {
       app.log.warn('Broadcast rejected: invalid token')
-      socket.close(4401, 'Unauthorized')
+      ws.close(4401, 'Unauthorized')
       return
     }
 
@@ -36,27 +37,27 @@ export async function broadcastRoute(app: FastifyInstance) {
 
     iceReq.on('error', (err) => {
       app.log.error('Icecast source error: ' + err.message)
-      socket.close(1011, 'Icecast connection failed')
+      ws.close(1011, 'Icecast connection failed')
     })
 
     iceReq.on('response', (res) => {
       if (res.statusCode !== 200) {
         app.log.error(`Icecast rejected source: ${res.statusCode}`)
-        socket.close(1011, `Icecast rejected: ${res.statusCode}`)
+        ws.close(1011, `Icecast rejected: ${res.statusCode}`)
       }
     })
 
     // Pipe WebSocket audio chunks → Icecast
-    socket.on('message', (chunk: Buffer) => {
+    ws.on('message', (chunk: Buffer) => {
       iceReq.write(chunk)
     })
 
-    socket.on('close', () => {
+    ws.on('close', () => {
       app.log.info('Browser DJ disconnected')
       iceReq.end()
     })
 
-    socket.on('error', (err: Error) => {
+    ws.on('error', (err: Error) => {
       app.log.error('WS error: ' + err.message)
       iceReq.end()
     })
