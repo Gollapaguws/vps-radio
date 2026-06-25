@@ -1,25 +1,46 @@
-// Schedule.tsx — Show schedule placeholder page
-// Static content for now; Sprint 3 will wire up real scheduling.
-
+// Schedule.tsx — Dynamic show schedule from /api/schedule
+import { useEffect, useState } from 'react'
 import '../styles/schedule.css'
 
-interface Show {
+interface ScheduleRow {
+  id: number
   day: string
-  time: string
-  name: string
+  time_start: string
+  time_end: string
   host: string
-  genre: string
+  show_name: string
+  genre: string | null
+  recurring: number
 }
 
-const PLACEHOLDER_SCHEDULE: Show[] = [
-  { day: 'Monday',    time: '20:00 UTC', name: 'Monday Drive',        host: 'DJ Phantom',    genre: 'Deep House' },
-  { day: 'Wednesday', time: '21:00 UTC', name: 'Midweek Madness',     host: 'Groove Theory', genre: 'Drum & Bass' },
-  { day: 'Friday',    time: '22:00 UTC', name: 'Friday Night Live',   host: 'Bass Station',  genre: 'Techno' },
-  { day: 'Saturday',  time: '18:00 UTC', name: 'Saturday Sessions',   host: 'TBA',           genre: 'Ambient / Chill' },
-  { day: 'Sunday',    time: '16:00 UTC', name: 'Sunday Selectors',    host: 'Various DJs',   genre: 'Vinyl Only' },
-]
+interface ScheduleResponse {
+  schedule: ScheduleRow[]
+  live: boolean
+  liveMount: string | null
+}
 
 export default function Schedule() {
+  const apiUrl = import.meta.env.VITE_API_URL ?? '/api'
+  const [data, setData] = useState<ScheduleResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    const load = async () => {
+      try {
+        const res = await fetch(`${apiUrl}/schedule`)
+        const json = await res.json() as ScheduleResponse
+        if (!cancelled) { setData(json); setLoading(false) }
+      } catch {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    void load()
+    return () => { cancelled = true }
+  }, [apiUrl])
+
+  const shows = data?.schedule ?? []
+
   return (
     <div className="schedule-page">
       <header className="schedule-header">
@@ -27,30 +48,46 @@ export default function Schedule() {
         <p className="schedule-subtitle">All times UTC — tune in live or catch the podcast replay</p>
       </header>
 
-      <div className="schedule-notice">
-        <span>🚧</span>
-        <p>Scheduling system coming in Sprint 3. Below is a preview of planned programming.</p>
-      </div>
+      {data?.live && (
+        <div className="schedule-live-banner">
+          🔴 <strong>We're LIVE right now!</strong>
+          <a href="/" style={{ marginLeft: '0.75rem', color: '#7dd3fc', textDecoration: 'underline' }}>
+            Tune in →
+          </a>
+        </div>
+      )}
 
-      <ul className="schedule-list" aria-label="Upcoming shows">
-        {PLACEHOLDER_SCHEDULE.map((show) => (
-          <li key={`${show.day}-${show.time}`} className="schedule-item">
-            <div className="schedule-item-day">
-              <span className="schedule-day">{show.day}</span>
-              <span className="schedule-time">{show.time}</span>
-            </div>
-            <div className="schedule-item-info">
-              <span className="schedule-show-name">{show.name}</span>
-              <span className="schedule-host">with {show.host}</span>
-              <span className="schedule-genre badge badge--auto">{show.genre}</span>
-            </div>
-          </li>
-        ))}
-      </ul>
+      {loading && <p className="schedule-loading">Loading schedule…</p>}
+
+      {!loading && shows.length === 0 && (
+        <div className="schedule-notice">
+          <span>📻</span>
+          <p>No shows scheduled yet. Check back soon — or go live yourself at <a href="/broadcast">/broadcast</a>.</p>
+        </div>
+      )}
+
+      {shows.length > 0 && (
+        <ul className="schedule-list" aria-label="Upcoming shows">
+          {shows.map((show) => (
+            <li key={show.id} className="schedule-item">
+              <div className="schedule-item-day">
+                <span className="schedule-day">{show.day}</span>
+                <span className="schedule-time">{show.time_start} – {show.time_end} UTC</span>
+              </div>
+              <div className="schedule-item-info">
+                <span className="schedule-show-name">{show.show_name}</span>
+                <span className="schedule-host">with {show.host}</span>
+                {show.genre && <span className="schedule-genre badge badge--auto">{show.genre}</span>}
+                {!show.recurring && <span className="badge" style={{ background: 'rgba(251,191,36,0.2)', color: '#fbbf24' }}>One-off</span>}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
 
       <p className="schedule-footer-note">
         Want to host a show?{' '}
-        <a href="mailto:dj@radio.yourdomain.com">Get in touch →</a>
+        <a href="/broadcast">Go live now →</a>
       </p>
     </div>
   )

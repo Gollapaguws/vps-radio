@@ -2,8 +2,13 @@
 FROM node:20-alpine AS builder
 
 WORKDIR /app
+
+# Native addons (better-sqlite3) require build tools
+RUN apk add --no-cache python3 make g++
+
 COPY package.json package-lock.json* ./
 RUN npm install
+
 COPY . .
 RUN npm run build
 
@@ -13,15 +18,10 @@ FROM node:20-alpine
 WORKDIR /app
 ENV NODE_ENV=production
 
-COPY package.json package-lock.json* ./
-RUN npm install --omit=dev
-
+COPY package.json ./
+# Copy pre-built node_modules (includes compiled better-sqlite3 .node binary)
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 
-# Create data dir for SQLite
-RUN mkdir -p /app/data && chown node:node /app/data
-
-USER node
 EXPOSE 4000
-
 CMD ["node", "dist/index.js"]

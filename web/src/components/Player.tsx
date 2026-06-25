@@ -2,6 +2,7 @@ import { useRef, useState, useCallback } from 'react'
 import { useNowPlaying } from '../hooks/useNowPlaying'
 import Visualizer from './Visualizer'
 import VuMeter from './VuMeter'
+import SongRequest from './SongRequest'
 import '../styles/player.css'
 
 interface PlayerProps {
@@ -140,6 +141,9 @@ export default function Player({ streamUrl, apiUrl, compact = false }: PlayerPro
           )}
         </div>
       )}
+
+      {/* Song request widget */}
+      {!compact && <SongRequest apiUrl={apiUrl} />}
     </section>
   )
 }

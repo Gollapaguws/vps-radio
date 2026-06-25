@@ -4,16 +4,18 @@ import Schedule from './pages/Schedule'
 import Embed from './pages/Embed'
 import Stats from './pages/Stats'
 import Broadcast from './pages/Broadcast'
+import Admin from './pages/Admin'
 import './styles/globals.css'
 
-type Page = 'home' | 'schedule' | 'embed' | 'stats' | 'broadcast'
+type Page = 'home' | 'schedule' | 'embed' | 'stats' | 'broadcast' | 'admin'
 
 function getPage(): Page {
   const path = window.location.pathname.replace(/\/$/, '')
-  if (path === '/schedule') return 'schedule'
-  if (path === '/embed') return 'embed'
-  if (path === '/stats') return 'stats'
+  if (path === '/schedule')  return 'schedule'
+  if (path === '/embed')     return 'embed'
+  if (path === '/stats')     return 'stats'
   if (path === '/broadcast') return 'broadcast'
+  if (path === '/admin')     return 'admin'
   return 'home'
 }
 
@@ -77,6 +79,15 @@ export default function App() {
         <a href="/embed" target="_blank" rel="noreferrer">
           Embed ↗
         </a>
+        <a
+          href="/admin"
+          className={page === 'admin' ? 'active' : ''}
+          onClick={(e) => { e.preventDefault(); navigate('admin') }}
+          style={{ opacity: 0.5 }}
+          title="Admin dashboard"
+        >
+          ⚙
+        </a>
       </nav>
 
       <main className="app-main">
@@ -89,6 +100,7 @@ export default function App() {
         {page === 'schedule' && <Schedule />}
         {page === 'stats' && <Stats />}
         {page === 'broadcast' && <Broadcast />}
+        {page === 'admin' && <Admin />}
       </main>
 
       <footer className="app-footer">

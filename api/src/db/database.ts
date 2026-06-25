@@ -67,6 +67,26 @@ function migrate(db: Database.Database): void {
     );
 
     CREATE INDEX IF NOT EXISTS idx_listener_snapshots_ts ON listener_snapshots(ts);
+
+    CREATE TABLE IF NOT EXISTS song_requests (
+      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+      requester   TEXT NOT NULL DEFAULT 'Anonymous',
+      song        TEXT NOT NULL,
+      status      TEXT NOT NULL DEFAULT 'pending',
+      created_at  INTEGER NOT NULL DEFAULT (unixepoch() * 1000)
+    );
+
+    CREATE TABLE IF NOT EXISTS schedule (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      day        TEXT NOT NULL,
+      time_start TEXT NOT NULL,
+      time_end   TEXT NOT NULL,
+      host       TEXT NOT NULL,
+      show_name  TEXT NOT NULL,
+      genre      TEXT,
+      recurring  INTEGER NOT NULL DEFAULT 1,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch() * 1000)
+    );
   `)
 }
 

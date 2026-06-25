@@ -66,15 +66,16 @@ services:
   api:
     build:
       context: ./api
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     restart: unless-stopped
     depends_on:
       icecast:
         condition: service_healthy
     environment:
-      - NODE_ENV=${NODE_ENV:-development}
+      - NODE_ENV=production
       - API_PORT=${API_PORT:-4000}
       - API_SECRET=${API_SECRET}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-changeme_admin_password}
       - ICECAST_HOSTNAME=icecast
       - ICECAST_PORT=${ICECAST_PORT:-8000}
       - ICECAST_ADMIN_USER=${ICECAST_ADMIN_USER}
@@ -90,8 +91,6 @@ services:
       - RECORDINGS_PATH=/recordings
       - DB_PATH=/data/radio.db
     volumes:
-      - ./api:/app
-      - /app/node_modules
       - recordings:/recordings
       - api_data:/data
     ports:

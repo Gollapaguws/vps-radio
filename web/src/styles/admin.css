@@ -1,0 +1,225 @@
+/* admin.css — admin dashboard styles */
+
+/* ── Login ──────────────────────────────────────────────────────────────── */
+.admin-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.admin-login-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  backdrop-filter: blur(16px);
+}
+
+.admin-login-title {
+  font-size: 1.6rem;
+  margin: 0 0 0.3rem;
+  color: white;
+}
+
+.admin-login-sub {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.4);
+  margin: 0 0 1.5rem;
+}
+
+/* ── Shared inputs ──────────────────────────────────────────────────────── */
+.admin-input {
+  width: 100%;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  color: white;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  margin-bottom: 0.75rem;
+  transition: border-color 0.2s;
+}
+
+.admin-input:focus { outline: none; border-color: rgba(125,211,252,0.5); }
+.admin-input::placeholder { color: rgba(255,255,255,0.3); }
+
+select.admin-input { cursor: pointer; }
+
+.admin-error {
+  color: #fca5a5;
+  font-size: 0.85rem;
+  margin: -0.4rem 0 0.6rem;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
+.admin-btn-primary {
+  background: linear-gradient(135deg, rgba(125,211,252,0.2), rgba(99,102,241,0.3));
+  border: 1px solid rgba(125,211,252,0.35);
+  color: #7dd3fc;
+  border-radius: 10px;
+  padding: 0.65rem 1.2rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.admin-btn-primary:hover:not(:disabled) {
+  border-color: rgba(125,211,252,0.6);
+  box-shadow: 0 0 16px rgba(125,211,252,0.15);
+}
+
+.admin-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.admin-btn-sm {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7);
+  border-radius: 8px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.admin-btn-sm:hover { background: rgba(255,255,255,0.12); }
+
+.admin-btn-danger {
+  border-color: rgba(239,68,68,0.3);
+  color: #fca5a5;
+}
+
+.admin-btn-danger:hover { background: rgba(239,68,68,0.15); }
+
+/* ── Dashboard layout ───────────────────────────────────────────────────── */
+.admin-dashboard {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem 3rem;
+}
+
+.admin-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.admin-topbar-title {
+  font-size: 1.2rem;
+  color: white;
+  margin: 0;
+}
+
+/* ── Stat grid ──────────────────────────────────────────────────────────── */
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 540px) { .admin-stat-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.admin-stat {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.admin-stat.ok  { border-color: rgba(34,197,94,0.25); }
+.admin-stat.warn { border-color: rgba(251,113,133,0.35); }
+
+.admin-stat-label { font-size: 0.7rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+.admin-stat-value { font-size: 1rem; font-weight: 700; color: white; }
+
+/* ── Panels ─────────────────────────────────────────────────────────────── */
+.admin-panel {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin-bottom: 1.2rem;
+}
+
+.admin-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.admin-panel-title {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.8);
+  margin: 0 0 0.9rem;
+  font-weight: 600;
+}
+
+.admin-empty {
+  color: rgba(255,255,255,0.35);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.admin-loading {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* ── List items ─────────────────────────────────────────────────────────── */
+.admin-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+
+.admin-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  gap: 0.75rem;
+}
+
+.admin-list-main { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.admin-list-main strong { color: white; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.admin-list-sub { color: rgba(255,255,255,0.45); font-size: 0.78rem; margin-top: 0.15rem; }
+
+/* ── Add show form ──────────────────────────────────────────────────────── */
+.admin-form {
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-form-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.admin-form-row .admin-input { flex: 1; min-width: 120px; margin-bottom: 0.5rem; }
+.admin-form-row .admin-btn-primary { width: auto; flex-shrink: 0; margin-bottom: 0.5rem; }
+
+.admin-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.85rem;
+  cursor: pointer;
+  flex: 1;
+}

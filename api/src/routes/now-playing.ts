@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import { XMLParser } from 'fast-xml-parser'
+import { getDb } from '../db/database.js'
 
 const ICECAST_HOST = process.env.ICECAST_HOSTNAME ?? 'localhost'
 const ICECAST_PORT = process.env.ICECAST_PORT ?? '8000'
@@ -30,6 +31,7 @@ interface NowPlayingResponse {
   format: string
   stream_start: string | null
   fallback: boolean
+  djShow: { id: number; mount: string; started_at: number } | null
   timestamp: string
 }
 
@@ -54,24 +56,28 @@ async function fetchIcecastStats(): Promise<IcecastSource[]> {
   return Array.isArray(sources) ? sources : [sources]
 }
 
+function getActiveDjShow(): { id: number; mount: string; started_at: number } | null {
+  try {
+    const db = getDb()
+    return db.prepare(`SELECT id, mount, started_at FROM live_shows WHERE active = 1 ORDER BY started_at DESC LIMIT 1`)
+      .get() as { id: number; mount: string; started_at: number } | null
+  } catch {
+    return null
+  }
+}
+
 function buildResponse(sources: IcecastSource[]): NowPlayingResponse {
-  // Prefer /live mount, fall back to /fallback
   const live = sources.find((s) => s['@_mount'] === '/live')
   const fallback = sources.find((s) => s['@_mount'] === '/fallback')
   const active = live ?? fallback
 
+  const djShow = live ? getActiveDjShow() : null
+
   if (!active) {
     return {
-      live: false,
-      mount: '',
-      title: 'No stream active',
-      artist: '',
-      listeners: 0,
-      bitrate: 0,
-      format: '',
-      stream_start: null,
-      fallback: false,
-      timestamp: new Date().toISOString(),
+      live: false, mount: '', title: 'No stream active', artist: '',
+      listeners: 0, bitrate: 0, format: '', stream_start: null,
+      fallback: false, djShow: null, timestamp: new Date().toISOString(),
     }
   }
 
@@ -85,6 +91,7 @@ function buildResponse(sources: IcecastSource[]): NowPlayingResponse {
     format: active.format ?? '',
     stream_start: active.stream_start ?? null,
     fallback: !live && !!fallback,
+    djShow,
     timestamp: new Date().toISOString(),
   }
 }

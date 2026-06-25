@@ -9,6 +9,28 @@
   animation: fade-in-up 0.4s ease both;
 }
 
+.schedule-live-banner {
+  background: rgba(239,68,68,0.15);
+  border: 1px solid rgba(239,68,68,0.35);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: #fca5a5;
+  font-size: 0.95rem;
+  text-align: center;
+  animation: pulse-red 2s ease-in-out infinite;
+}
+
+@keyframes pulse-red {
+  0%, 100% { border-color: rgba(239,68,68,0.35); }
+  50% { border-color: rgba(239,68,68,0.7); }
+}
+
+.schedule-loading {
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+  font-size: 0.9rem;
+}
+
 .schedule-header {
   text-align: center;
 }
