@@ -1,13 +1,16 @@
 import { useRef, useState, useCallback } from 'react'
 import { useNowPlaying } from '../hooks/useNowPlaying'
+import Visualizer from './Visualizer'
+import VuMeter from './VuMeter'
 import '../styles/player.css'
 
 interface PlayerProps {
   streamUrl: string
   apiUrl: string
+  compact?: boolean
 }
 
-export default function Player({ streamUrl, apiUrl }: PlayerProps) {
+export default function Player({ streamUrl, apiUrl, compact = false }: PlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null)
   const [playing, setPlaying] = useState(false)
   const [volume, setVolume] = useState(0.8)
@@ -20,12 +23,10 @@ export default function Player({ streamUrl, apiUrl }: PlayerProps) {
 
     if (playing) {
       audio.pause()
-      // Flush buffer to prevent stale audio on resume
       audio.src = ''
       setPlaying(false)
     } else {
       setLoading(true)
-      // Append cache-bust timestamp to force fresh connection
       audio.src = `${streamUrl}?t=${Date.now()}`
       audio.volume = volume
       audio.play()
@@ -51,13 +52,13 @@ export default function Player({ streamUrl, apiUrl }: PlayerProps) {
     setLoading(false)
   }, [])
 
-  const trackTitle = nowPlaying?.title ?? 'Loading...'
-  const trackArtist = nowPlaying?.artist ?? ''
+  const trackTitle   = nowPlaying?.title    ?? 'Loading...'
+  const trackArtist  = nowPlaying?.artist   ?? ''
   const listenerCount = nowPlaying?.listeners ?? 0
-  const isLive = nowPlaying?.live ?? false
+  const isLive       = nowPlaying?.live      ?? false
 
   return (
-    <section className="player" aria-label="Radio player">
+    <section className={`player${compact ? ' player--compact' : ''}`} aria-label="Radio player">
       {/* Hidden native audio element */}
       <audio
         ref={audioRef}
@@ -65,6 +66,19 @@ export default function Player({ streamUrl, apiUrl }: PlayerProps) {
         onEnded={handleError}
         aria-label="Radio stream audio"
       />
+
+      {/* Station branding strip */}
+      {!compact && (
+        <div className="player-brand">
+          <span className="player-brand-logo" aria-hidden="true">📻</span>
+          <span className="player-brand-name">
+            {import.meta.env.VITE_STATION_NAME ?? 'VPS Radio'}
+          </span>
+        </div>
+      )}
+
+      {/* Waveform visualizer */}
+      {!compact && <Visualizer audioRef={audioRef} playing={playing} />}
 
       {/* Now playing metadata */}
       <div className="player-meta">
@@ -110,14 +124,23 @@ export default function Player({ streamUrl, apiUrl }: PlayerProps) {
         </div>
       </div>
 
+      {/* VU meter */}
+      {!compact && <VuMeter audioRef={audioRef} playing={playing} />}
+
       {/* Listener count */}
       {nowPlaying && (
         <div className="player-footer">
           <span className="listener-count">
             👥 {listenerCount} listener{listenerCount !== 1 ? 's' : ''}
           </span>
+          {nowPlaying.stream_start && (
+            <span className="stream-start">
+              on air since {new Date(nowPlaying.stream_start).toLocaleTimeString()}
+            </span>
+          )}
         </div>
       )}
     </section>
   )
 }
+

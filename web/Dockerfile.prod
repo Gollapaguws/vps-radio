@@ -3,8 +3,17 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm install
 COPY . .
+
+# Build args for Vite env vars (baked into the bundle at build time)
+ARG VITE_API_URL=/api
+ARG VITE_STREAM_URL=/stream/live
+ARG VITE_STATION_NAME=VPS Radio
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_STREAM_URL=$VITE_STREAM_URL
+ENV VITE_STATION_NAME=$VITE_STATION_NAME
+
 RUN npm run build
 
 # ── Runtime: minimal static file server ───────────────────────────────────

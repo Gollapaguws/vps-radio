@@ -54,9 +54,11 @@ services:
       - STATION_GENRE=${STATION_GENRE:-Various}
     volumes:
       - ./config/radio.liq:/etc/liquidsoap/radio.liq:ro
+      - ./config/liquidsoap-entrypoint.sh:/entrypoint.sh:ro
       - ./assets/playlist:/music:ro
       - recordings:/recordings
-    command: ["/etc/liquidsoap/radio.liq"]
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    command: []
     networks:
       - radio
 
@@ -85,34 +87,35 @@ services:
       - R2_PUBLIC_URL=${R2_PUBLIC_URL:-}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+      - RECORDINGS_PATH=/recordings
+      - DB_PATH=/data/radio.db
     volumes:
       - ./api:/app
       - /app/node_modules
+      - recordings:/recordings
+      - api_data:/data
     ports:
       - "127.0.0.1:4000:4000"
     healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:4000/health"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:4000/health',(r)=>{process.exit(r.statusCode===200?0:1)}).on('error',()=>process.exit(1))"]
       interval: 20s
       timeout: 5s
       retries: 3
     networks:
       - radio
 
-  # ── React web player (Vite dev server) ────────────────────────────────────
+  # ── React web player (production static build) ────────────────────────────
   web:
     build:
       context: ./web
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
+      args:
+        - VITE_API_URL=/api
+        - VITE_STREAM_URL=/stream/live
+        - VITE_STATION_NAME=${STATION_NAME:-VPS Radio}
     restart: unless-stopped
     depends_on:
       - api
-    environment:
-      - VITE_API_URL=http://localhost/api
-      - VITE_STREAM_URL=http://localhost/stream/live
-      - VITE_STATION_NAME=${STATION_NAME:-VPS Radio}
-    volumes:
-      - ./web:/app
-      - /app/node_modules
     ports:
       - "3000:3000"
     networks:
@@ -136,6 +139,7 @@ services:
 volumes:
   icecast_logs:
   recordings:
+  api_data:
 
 networks:
   radio:

@@ -81,5 +81,9 @@
 
   <security>
     <chroot>0</chroot>
+    <changeowner>
+      <user>icecastrun</user>
+      <group>icecast2grp</group>
+    </changeowner>
   </security>
 </icecast>

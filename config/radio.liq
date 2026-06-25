@@ -1,6 +1,8 @@
 #!/usr/bin/env liquidsoap
 # radio.liq — VPS Radio Liquidsoap configuration
 # Liquidsoap 2.x syntax
+# NOTE: This file is processed by envsubst before execution.
+# Use ${VAR} for environment variable substitution.
 
 # ─── Settings ────────────────────────────────────────────────────────────────
 
@@ -10,15 +12,15 @@ settings.server.telnet.set(false)
 settings.log.stdout.set(true)
 settings.log.level.set(3)
 
-# ─── Icecast output credentials (from environment) ───────────────────────────
+# ─── Icecast output credentials (substituted by entrypoint via envsubst) ─────
 
-icecast_host  = getenv("ICECAST_HOSTNAME")
-icecast_port  = int_of_string(getenv("ICECAST_PORT"))
-icecast_pass  = getenv("ICECAST_SOURCE_PASSWORD")
-station_name  = getenv("STATION_NAME")
-station_desc  = getenv("STATION_DESCRIPTION")
-station_url   = getenv("STATION_URL")
-station_genre = getenv("STATION_GENRE")
+icecast_host  = "${ICECAST_HOSTNAME}"
+icecast_port  = int_of_string("${ICECAST_PORT}")
+icecast_pass  = "${ICECAST_SOURCE_PASSWORD}"
+station_name  = "${STATION_NAME}"
+station_desc  = "${STATION_DESCRIPTION}"
+station_url   = "${STATION_URL}"
+station_genre = "${STATION_GENRE}"
 
 # ─── Fallback playlist ───────────────────────────────────────────────────────
 # Reads all MP3s from /music (mapped from assets/playlist in compose)
@@ -33,9 +35,8 @@ fallback_playlist = playlist(
 fallback = mksafe(fallback_playlist)
 
 # ─── Live source (desktop DJs: BUTT, Mixxx, Darkice) ────────────────────────
-# Icecast handles the /live mount; Liquidsoap pushes /fallback.
-# When a DJ connects to /live directly, Icecast's fallback-override takes them
-# live automatically — Liquidsoap only manages /fallback.
+# The /live mount is fed directly by DJs via Icecast.
+# Liquidsoap manages /fallback; Icecast fallback-override handles the switch.
 
 # ─── Smooth crossfade between tracks ─────────────────────────────────────────
 
@@ -62,16 +63,18 @@ radio = map_metadata(
   radio
 )
 
-# ─── FFmpeg recording (writes to /recordings, cleaned up by cron) ────────────
-# Uses mp3 encoder; requires liquidsoap-ffmpeg or built-in mp3 support
+# crossfade can be fallible briefly during transitions — ensure infallible output
+radio = mksafe(radio)
+
+# ─── Fallback recording (continuous, rotates hourly) ─────────────────────────
+# Records the fallback stream; files land in /recordings for the API archiver.
 
 ignore(
   output.file(
     %mp3(bitrate=192, stereo=true),
-    fallible=true,
-    reopen_on_metadata=false,
+    reopen_on_metadata=fun(_) -> false,
     reopen_delay=3600.0,
-    "/recordings/%Y-%m-%dT%H-%M-%S-fallback.mp3",
+    "/recordings/fallback-%Y%m%d-%H%M%S.mp3",
     radio
   )
 )

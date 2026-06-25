@@ -4,7 +4,7 @@
 /* ── Design tokens ─────────────────────────────────────────────────────── */
 :root {
   /* Colours */
-  --color-bg:           #0d0d0f;
+  --color-bg:           #0a0a0f;
   --color-surface:      #18181c;
   --color-surface-alt:  #22222a;
   --color-border:       #2e2e38;
@@ -44,7 +44,7 @@
   /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.6);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.7);
 
   /* Transitions */
   --transition-fast:   150ms ease;
@@ -74,6 +74,12 @@ body {
   line-height: 1.6;
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
+  /* Subtle radial gradient for depth */
+  background-image: radial-gradient(
+    ellipse 80% 60% at 50% 0%,
+    rgba(124, 106, 245, 0.06) 0%,
+    transparent 70%
+  );
 }
 
 a {
@@ -111,10 +117,12 @@ button {
   display: flex;
   align-items: center;
   gap: var(--space-3);
+  animation: fade-in-down 0.6s ease both;
 }
 
 .app-logo {
   font-size: 2rem;
+  filter: drop-shadow(0 0 12px rgba(124, 106, 245, 0.5));
 }
 
 .app-title {
@@ -122,17 +130,58 @@ button {
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--color-text);
+  background: linear-gradient(135deg, #e8e8ef 30%, #7c6af5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .app-main {
   width: 100%;
   max-width: 480px;
+  animation: fade-in-up 0.5s ease 0.15s both;
 }
 
 .app-footer {
   margin-top: auto;
   color: var(--color-text-muted);
   font-size: var(--text-xs);
+}
+
+/* ── Page nav ───────────────────────────────────────────────────────────── */
+.app-nav {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.app-nav a {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast);
+}
+
+.app-nav a:hover,
+.app-nav a.active {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+/* ── Animations ─────────────────────────────────────────────────────────── */
+@keyframes fade-in-down {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-header,
+  .app-main {
+    animation: none;
+  }
 }
 
 /* ── Scrollbar (Chromium) ───────────────────────────────────────────────── */

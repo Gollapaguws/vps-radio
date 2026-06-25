@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Install dependencies first (cache layer)
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm install
 
 # Source code is volume-mounted in docker-compose.yml
 EXPOSE 4000
