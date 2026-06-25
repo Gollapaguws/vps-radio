@@ -9,9 +9,6 @@ interface HealthData {
   stream: { status: string; listeners: number; live: boolean }
   disk: { usedPct: string; freeGb: number }
 }
-interface LiveShow {
-  id: number; mount: string; started_at: number; ended_at: number | null; duration_s: number | null; active: number
-}
 interface RequestRow {
   id: number; requester: string; song: string; status: string; created_at: number
 }
@@ -72,7 +69,7 @@ function Login({ onToken }: { onToken: (t: string) => void }) {
 }
 
 // ── Stats summary ────────────────────────────────────────────────────────────
-function StatsSummary({ token }: { token: string }) {
+function StatsSummary(_: { token: string }) {
   const [health, setHealth] = useState<HealthData | null>(null)
 
   useEffect(() => {
@@ -152,19 +149,8 @@ function RequestsPanel({ token }: { token: string }) {
 
 // ── Live Shows log ──────────────────────────────────────────────────────────
 function ShowsPanel() {
-  const [shows, setShows] = useState<LiveShow[]>([])
-
   useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await fetch(`${API}/shows`)
-        // live_shows come from /shows endpoint which returns recorded shows
-        // show recent live_shows via a dedicated admin endpoint isn't wired yet
-        // for now skip
-      } catch { /* ignore */ }
-    }
-    // Fetch from now-playing + health to show recent DJ activity
-    void load()
+    // DJ sessions are logged when DJs connect — link out to API
   }, [])
 
   return (
