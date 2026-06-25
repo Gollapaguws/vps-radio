@@ -46,6 +46,9 @@
     <!-- Fall through to /fallback when no DJ is connected -->
     <fallback-mount>/fallback</fallback-mount>
     <fallback-override>1</fallback-override>
+    <!-- Notify API when a DJ connects / disconnects -->
+    <on-connect>curl -s -X POST http://api:4000/icecast/connect -H "Content-Type: application/json" -d "{\"mount\":\"/live\",\"secret\":\"${API_SECRET}\"}" &amp;</on-connect>
+    <on-disconnect>curl -s -X POST http://api:4000/icecast/disconnect -H "Content-Type: application/json" -d "{\"mount\":\"/live\",\"secret\":\"${API_SECRET}\"}" &amp;</on-disconnect>
   </mount>
 
   <mount type="normal">

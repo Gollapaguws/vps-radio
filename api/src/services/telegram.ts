@@ -76,9 +76,24 @@ export async function alertDiskWarning(usedPct: number, path: string): Promise<v
   )
 }
 
-export async function alertListenerSpike(count: number, mount: string): Promise<void> {
-  await sendAlert(
-    `Listener spike: *${count} listeners* on \`${mount}\``,
-    { type: 'listener_spike', silent: true },
-  )
+// Re-export for convenience (direct message without type icon)
+export async function sendTelegram(text: string): Promise<void> {
+  if (!isTelegramConfigured()) return
+  try {
+    const res = await fetch(`${TELEGRAM_API}/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: CHAT_ID,
+        text,
+        parse_mode: 'Markdown',
+        disable_notification: false,
+      }),
+      signal: AbortSignal.timeout(10_000),
+    })
+    if (!res.ok) console.warn(`[telegram] HTTP ${res.status}`)
+  } catch (err) {
+    console.warn('[telegram] Failed:', err)
+  }
 }
+

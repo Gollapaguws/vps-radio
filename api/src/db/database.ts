@@ -48,6 +48,25 @@ function migrate(db: Database.Database): void {
       value    TEXT,
       PRIMARY KEY (show_id, key)
     );
+
+    CREATE TABLE IF NOT EXISTS live_shows (
+      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+      mount       TEXT NOT NULL,
+      client_ip   TEXT,
+      started_at  INTEGER NOT NULL,
+      ended_at    INTEGER,
+      duration_s  INTEGER,
+      active      INTEGER NOT NULL DEFAULT 1
+    );
+
+    CREATE TABLE IF NOT EXISTS listener_snapshots (
+      id    INTEGER PRIMARY KEY AUTOINCREMENT,
+      ts    INTEGER NOT NULL,
+      count INTEGER NOT NULL DEFAULT 0,
+      mount TEXT NOT NULL DEFAULT '/fallback'
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_listener_snapshots_ts ON listener_snapshots(ts);
   `)
 }
 

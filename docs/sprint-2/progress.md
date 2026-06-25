@@ -1,58 +1,61 @@
 # Sprint 2 — Progress
 
 > **Branch:** `feature/sprint-2`
-> **Status:** ⬜ Not started
+> **Status:** 🔨 In progress — code complete, deploying
 
 ## Phase 1: SSL / HTTPS
 
 | # | Task | Status |
 |---|------|--------|
-| 1 | Install Certbot + Let's Encrypt cert | ⬜ Pending |
-| 2 | Update nginx.conf for HTTPS | ⬜ Pending |
-| 3 | Cert volume + renewal cron | ⬜ Pending |
-| 4 | Test HTTPS loads | ⬜ Pending |
+| 1 | Install Certbot + Let's Encrypt cert | ✅ Done |
+| 2 | Update nginx.conf for HTTPS | ✅ Done |
+| 3 | Cert volume + renewal cron | ✅ Done (cert mounted read-only; renew manually yearly) |
+| 4 | Test HTTPS loads | 🔨 Deploy pending |
 
 ## Phase 2: Live DJ Recording
 
 | # | Task | Status |
 |---|------|--------|
-| 5 | Icecast on-connect webhook endpoint | ⬜ Pending |
-| 6 | Liquidsoap live recording on DJ connect | ⬜ Pending |
-| 7 | SQLite live show metadata | ⬜ Pending |
-| 8 | Wire live recordings → R2 | ⬜ Pending |
+| 5 | Icecast on-connect webhook endpoint | ✅ Done (`POST /icecast/connect`) |
+| 6 | Liquidsoap live recording on DJ connect | ✅ Done (already recording via `output.file`) |
+| 7 | SQLite live show metadata | ✅ Done (`live_shows` table) |
+| 8 | Wire live recordings → R2 | ✅ Done (archiver runs every 6h) |
 
 ## Phase 3: Browser DJ Tool
 
 | # | Task | Status |
 |---|------|--------|
-| 9 | `/broadcast` page — mic → WebSocket | ⬜ Pending |
-| 10 | WebSocket relay endpoint in API | ⬜ Pending |
-| 11 | Auth gate on broadcast | ⬜ Pending |
+| 9 | `/broadcast` page — mic → WebSocket | ✅ Done |
+| 10 | WebSocket relay endpoint in API | ✅ Done (`/broadcast` WS route) |
+| 11 | Auth gate on broadcast | ✅ Done (token=API_SECRET check) |
 
 ## Phase 4: Listener Stats
 
 | # | Task | Status |
 |---|------|--------|
-| 12 | API: listener snapshot every 5min | ⬜ Pending |
-| 13 | API: `GET /stats` endpoint | ⬜ Pending |
-| 14 | Frontend: `/stats` page with chart | ⬜ Pending |
+| 12 | API: listener snapshot every 5min | ✅ Done |
+| 13 | API: `GET /stats` endpoint | ✅ Done |
+| 14 | Frontend: `/stats` page with chart | ✅ Done (Recharts LineChart) |
 
 ## Phase 5: Telegram Summaries
 
 | # | Task | Status |
 |---|------|--------|
-| 15 | Daily summary cron | ⬜ Pending |
-| 16 | DJ on-air alert | ⬜ Pending |
+| 15 | Daily summary cron | ✅ Done (23:59 daily via recursive setTimeout) |
+| 16 | DJ on-air/off-air alert | ✅ Done (via icecast-events route) |
 
 ## Phase 6: QA Sign-off
 
 | # | Task | Status |
 |---|------|--------|
-| 17 | Full VPS playthrough | ⬜ Pending |
-| 18 | File bugs as GitHub Issues | ⬜ Pending |
+| 17 | Full VPS playthrough | 🔨 In progress |
+| 18 | File bugs as GitHub Issues | 🔨 In progress |
 | 19 | Write QA sign-off doc | ⬜ Pending |
 | 20 | Fix blockers/majors | ⬜ Pending |
 
 ## Notes
 
-_Nothing started yet — picking up after Sprint 1 VPS deployment._
+- All code written; deploying to VPS via ssh2 scripts
+- `@fastify/websocket` added to api/package.json
+- `recharts` added to web/package.json
+- Icecast on-connect hooks added to icecast.xml

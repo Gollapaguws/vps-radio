@@ -2,14 +2,18 @@ import { useEffect, useState } from 'react'
 import Player from './components/Player'
 import Schedule from './pages/Schedule'
 import Embed from './pages/Embed'
+import Stats from './pages/Stats'
+import Broadcast from './pages/Broadcast'
 import './styles/globals.css'
 
-type Page = 'home' | 'schedule' | 'embed'
+type Page = 'home' | 'schedule' | 'embed' | 'stats' | 'broadcast'
 
 function getPage(): Page {
   const path = window.location.pathname.replace(/\/$/, '')
   if (path === '/schedule') return 'schedule'
   if (path === '/embed') return 'embed'
+  if (path === '/stats') return 'stats'
+  if (path === '/broadcast') return 'broadcast'
   return 'home'
 }
 
@@ -56,6 +60,20 @@ export default function App() {
         >
           Schedule
         </a>
+        <a
+          href="/stats"
+          className={page === 'stats' ? 'active' : ''}
+          onClick={(e) => { e.preventDefault(); navigate('stats') }}
+        >
+          Stats
+        </a>
+        <a
+          href="/broadcast"
+          className={page === 'broadcast' ? 'active' : ''}
+          onClick={(e) => { e.preventDefault(); navigate('broadcast') }}
+        >
+          🎙️ Go Live
+        </a>
         <a href="/embed" target="_blank" rel="noreferrer">
           Embed ↗
         </a>
@@ -69,6 +87,8 @@ export default function App() {
           />
         )}
         {page === 'schedule' && <Schedule />}
+        {page === 'stats' && <Stats />}
+        {page === 'broadcast' && <Broadcast />}
       </main>
 
       <footer className="app-footer">

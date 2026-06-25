@@ -1,12 +1,16 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
+import websocket from '@fastify/websocket'
 
 import { healthRoute } from './routes/health.js'
 import { nowPlayingRoute } from './routes/now-playing.js'
 import { versionRoute } from './routes/version.js'
 import { showsRoute } from './routes/shows.js'
 import { podcastRoute } from './routes/podcast.js'
+import { statsRoute } from './routes/stats.js'
+import { icecastEventsRoute } from './routes/icecast-events.js'
+import { broadcastRoute } from './routes/broadcast.js'
 import { startHealthMonitor } from './services/healthMonitor.js'
 import { startArchiver } from './services/archiver.js'
 
@@ -28,12 +32,18 @@ await app.register(cors, {
   methods: ['GET', 'POST', 'OPTIONS'],
 })
 
+// ── WebSocket support ───────────────────────────────────────────────────────
+await app.register(websocket)
+
 // ── Routes ─────────────────────────────────────────────────────────────────
 await app.register(healthRoute)
 await app.register(nowPlayingRoute)
 await app.register(versionRoute)
 await app.register(showsRoute)
 await app.register(podcastRoute)
+await app.register(statsRoute)
+await app.register(icecastEventsRoute)
+await app.register(broadcastRoute)
 
 // ── Root ───────────────────────────────────────────────────────────────────
 app.get('/', async () => ({
