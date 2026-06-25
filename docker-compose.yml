@@ -104,21 +104,18 @@ services:
     networks:
       - radio
 
-  # ── React web player (Vite dev server) ────────────────────────────────────
+  # ── React web player (production static build) ────────────────────────────
   web:
     build:
       context: ./web
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
+      args:
+        - VITE_API_URL=/api
+        - VITE_STREAM_URL=/stream/live
+        - VITE_STATION_NAME=${STATION_NAME:-VPS Radio}
     restart: unless-stopped
     depends_on:
       - api
-    environment:
-      - VITE_API_URL=http://localhost/api
-      - VITE_STREAM_URL=http://localhost/stream/live
-      - VITE_STATION_NAME=${STATION_NAME:-VPS Radio}
-    volumes:
-      - ./web:/app
-      - /app/node_modules
     ports:
       - "3000:3000"
     networks:
