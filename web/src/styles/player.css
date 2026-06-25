@@ -1,17 +1,46 @@
 /* player.css — Player component styles
-   Milo: dark card, accessible controls, reduced-motion safe */
+   Milo: dark card, glassmorphism, accessible controls, reduced-motion safe */
 
 /* ── Player card ────────────────────────────────────────────────────────── */
 .player {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: linear-gradient(
+    135deg,
+    rgba(24, 24, 28, 0.95) 0%,
+    rgba(34, 34, 42, 0.9)  100%
+  );
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(124, 106, 245, 0.15);
   border-radius: var(--radius-xl);
   padding: var(--space-6);
-  box-shadow: var(--shadow-lg);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
   width: 100%;
+}
+
+/* ── Brand strip ────────────────────────────────────────────────────────── */
+.player-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.player-brand-logo {
+  font-size: 1.4rem;
+}
+
+.player-brand-name {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
 }
 
 /* ── Now-playing metadata ───────────────────────────────────────────────── */
@@ -43,7 +72,6 @@
 .badge--live {
   background: var(--color-live);
   color: #fff;
-  /* Subtle pulsing dot to indicate live */
   animation: live-pulse 2s ease-in-out infinite;
 }
 
@@ -68,7 +96,6 @@
   font-size: var(--text-lg);
   font-weight: 600;
   color: var(--color-text);
-  /* Truncate long titles */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -117,6 +144,7 @@
 .play-btn:hover:not(:disabled) {
   background: var(--color-accent-dim);
   transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(124, 106, 245, 0.4);
 }
 
 .play-btn:active:not(:disabled) {
@@ -213,15 +241,49 @@
   outline-offset: 2px;
 }
 
-/* ── Footer (listener count) ────────────────────────────────────────────── */
+/* ── Footer (listener count + on-air time) ─────────────────────────────── */
 .player-footer {
   border-top: 1px solid var(--color-border);
   padding-top: var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
 }
 
-.listener-count {
+.listener-count,
+.stream-start {
   font-size: var(--text-xs);
   color: var(--color-text-muted);
+}
+
+/* ── Compact mode (embed) ───────────────────────────────────────────────── */
+.player--compact {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  gap: var(--space-3);
+  flex-direction: row;
+  align-items: center;
+}
+
+.player--compact .player-meta {
+  flex: 1;
+  min-height: unset;
+}
+
+.player--compact .player-track {
+  font-size: var(--text-base);
+}
+
+.player--compact .player-controls {
+  flex-shrink: 0;
+}
+
+.player--compact .play-btn {
+  width: 40px;
+  height: 40px;
+  font-size: 1rem;
 }
 
 /* ── Responsive — narrow screens ────────────────────────────────────────── */
@@ -237,3 +299,4 @@
     font-size: 1.2rem;
   }
 }
+

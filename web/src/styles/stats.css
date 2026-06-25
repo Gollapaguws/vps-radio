@@ -1,0 +1,72 @@
+.stats-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.stats-header h2 {
+  font-size: 1.2rem;
+  color: rgba(255,255,255,0.9);
+  margin: 0;
+}
+
+.stats-periods {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.stats-periods button {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.6);
+  border-radius: 6px;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.stats-periods button.active,
+.stats-periods button:hover {
+  background: rgba(125,211,252,0.15);
+  border-color: rgba(125,211,252,0.4);
+  color: #7dd3fc;
+}
+
+.stats-peak {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 1rem;
+}
+
+.stats-peak strong {
+  color: #7dd3fc;
+}
+
+.stats-chart {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 1.5rem 1rem;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stats-loading,
+.stats-error,
+.stats-empty {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.stats-error { color: rgba(251,113,133,0.7); }

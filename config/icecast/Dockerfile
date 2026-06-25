@@ -7,12 +7,18 @@ RUN apt-get update -qq && \
       icecast2 \
       gettext-base \
       curl \
-    && rm -rf /var/lib/apt/lists/*
+      gosu \
+    && rm -rf /var/lib/apt/lists/* \
+    && addgroup --system icecast2grp \
+    && adduser --system --ingroup icecast2grp --no-create-home icecastrun \
+    && mkdir -p /var/log/icecast2 /var/run/icecast2 /etc/icecast2 \
+    && chown -R icecastrun:icecast2grp /var/log/icecast2 /var/run/icecast2 /etc/icecast2
 
 # Template is copied into the image; docker-compose mounts override at runtime
 COPY icecast.xml /etc/icecast2/icecast.xml.template
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /entrypoint.sh \
+    && chown icecastrun:icecast2grp /etc/icecast2/icecast.xml.template
 
 EXPOSE 8000
 

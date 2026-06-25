@@ -13,6 +13,22 @@ To seed the playlist, copy your MP3s here:
 cp /path/to/your/music/*.mp3 assets/playlist/
 ```
 
-Or download a few Creative Commons tracks from:
-- https://freemusicarchive.org/
-- https://ccmixter.org/
+## Quick seed with Creative Commons music
+
+Run the helper script to download 3 sample tracks via yt-dlp (requires yt-dlp + ffmpeg):
+
+```bash
+./scripts/seed-playlist.sh
+```
+
+Or manually download from:
+- https://freemusicarchive.org/ (filter: CC BY)
+- https://ccmixter.org/ (Community Music)
+- https://incompetech.com/ (Kevin MacLeod — CC BY)
+
+## Requirements
+
+- Liquidsoap needs at least **1 MP3** to start without errors
+- Files must be **valid MP3** (not renamed from other formats)
+- ID3v2 tags (artist, title) will be shown in the web player metadata
+- Minimum 128kbps recommended for decent quality streaming

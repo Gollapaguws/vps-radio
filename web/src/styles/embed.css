@@ -1,0 +1,29 @@
+/* embed.css — Embeddable player frame styles
+   Milo: clean sticky bar, transparent background for seamless embedding */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  overflow: hidden;
+  height: 80px;
+}
+
+.embed-root {
+  width: 100%;
+  height: 80px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.embed-root .player {
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  min-height: 60px;
+  gap: var(--space-2);
+}
+
+.embed-root .player-track {
+  font-size: var(--text-sm);
+}

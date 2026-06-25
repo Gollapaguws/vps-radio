@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/player.tsx","./src/components/visualizer.tsx","./src/components/vumeter.tsx","./src/hooks/usenowplaying.ts","./src/pages/embed.tsx","./src/pages/schedule.tsx"],"version":"5.9.3"}
