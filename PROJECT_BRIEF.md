@@ -1,6 +1,6 @@
 # PROJECT_BRIEF.md — VPS Internet Radio & Streaming Broadcaster
 
-> Last updated: 2026-06-24 | Sprint 1 | Status: ✅ Done
+> Last updated: 2026-06-25 | Sprint 2 | Status: ✅ Done
 
 ## 1. Project Overview
 
@@ -101,41 +101,41 @@ The station runs continuously — when no live DJ is connected, Liquidsoap plays
 |--------|------|--------|-------|
 | 0 | Infrastructure | ✅ Done | VPS setup, Docker, Nginx, SSL, Icecast2 + Liquidsoap, API scaffold, React player scaffold |
 | 1 | Core Radio | ✅ Done | Health monitor, Telegram alerts, R2 archiver, podcast feed, Canvas visualizer, VU meter, embed widget, schedule page, Playwright tests |
-| 2 | Polish & Launch | ⬜ Planned | Browser DJ tool, embeddable widget v2, listener stats, Telegram summaries, QA sign-off |
+| 2 | Polish & Launch | ✅ Done | HTTPS/SSL, browser DJ tool, listener stats, Telegram summaries, DJ recording events, QA sign-off |
 | 3 | Dashboard | ⬜ Planned | Show scheduling, DJ management, listener requests |
 
 ## 8. Current State (rewrite every sprint)
 
-**Live at: http://lekkerkuier.com** (VPS: 72.62.211.31, Ubuntu, Docker Compose)
+**Live at: https://lekkerkuier.com** (VPS: 72.62.211.31, Ubuntu, Docker Compose)
 
-**All 5 public endpoints returning HTTP 200:**
-- `http://lekkerkuier.com/` — Web player (React, glassmorphism design)
-- `http://lekkerkuier.com/schedule` — Schedule page
-- `http://lekkerkuier.com/embed` — Embeddable compact player
-- `http://lekkerkuier.com/api/health` — API health JSON
-- `http://lekkerkuier.com/api/now-playing` — Live track metadata
+**All endpoints — HTTPS, fully live:**
+- `https://lekkerkuier.com/` — Web player (React, glassmorphism)
+- `https://lekkerkuier.com/schedule` — Schedule page
+- `https://lekkerkuier.com/stats` — Listener stats chart (Recharts)
+- `https://lekkerkuier.com/broadcast` — Browser DJ go-live tool
+- `https://lekkerkuier.com/embed` — Embeddable compact player
+- `https://lekkerkuier.com/api/health` — API health JSON
+- `https://lekkerkuier.com/api/now-playing` — Live track metadata
+- `https://lekkerkuier.com/api/stats?period=24h` — Listener data
+- `https://lekkerkuier.com/api/podcast/feed.xml` — iTunes RSS feed
 
 **What works:**
 - Full Docker Compose stack (5 services): Icecast2 ✅, Liquidsoap ✅, Node.js API ✅, React web (static) ✅, Nginx ✅
-- Icecast: runs as non-root via `gosu icecastrun`; healthy
-- Liquidsoap: plays fallback CC music playlist with crossfade; records hourly MP3s to `/recordings`
-- `GET /health` → `{status:"ok", stream:{status:"up", mount:"/fallback"}, disk:{usedPct:"8%", freeGb:89}}`
-- `GET /now-playing` → real track metadata from Icecast XML
-- `GET /shows` → SQLite show log
-- `GET /podcast/feed.xml` → RSS 2.0 + iTunes podcast feed
-- Web player: Canvas visualizer, stereo VU meter, glassmorphism dark card, live badge, now-playing metadata
-- API Docker healthcheck: uses `node` http module (no curl/wget in node:alpine)
-- Web served as static production build (Dockerfile.prod + http-server) — no Vite host restrictions
-- Recordings volume: `radio_recordings` → `/recordings` in both liquidsoap + api containers (chmod 777)
-- Caddy disabled (`systemctl disable caddy`) — won't reclaim port 80 on reboot
+- **HTTPS:** Let's Encrypt cert (valid until 2026-09-23), TLS 1.2/1.3, HSTS
+- **HTTP → HTTPS redirect:** port 80 returns 301
+- Icecast: runs as non-root via `gosu icecastrun`; on-connect/on-disconnect hooks fire to API
+- Liquidsoap: plays fallback CC music playlist with crossfade; records to `/recordings`
+- Browser DJ: `/broadcast` page streams mic via WebSocket → Icecast SOURCE protocol
+- Listener snapshots every 5min → SQLite → `/api/stats` endpoint
+- Daily Telegram summary at 23:59 (when bot token configured)
+- DJ on-air/off-air Telegram alerts
+- `GET /health` → `{status:"ok", stream:{status:"up"}, disk:{usedPct:"10%", freeGb:87}}`
+- R2 archiver silently skips when credentials not set (set in .env to enable)
 
-**What doesn't work yet:**
-- Live DJ show recording (Liquidsoap records fallback only; live source needs Icecast webhook — Sprint 2)
-- R2 credentials not configured on VPS (archiver silently skips — Sprint 2)
-- Telegram alerts not configured on VPS (skipped — Sprint 2)
-- No HTTPS/SSL — runs on HTTP port 80 only (Sprint 2: Let's Encrypt via Certbot)
-- Browser DJ broadcast tool not built (Sprint 2)
-- Listener stats dashboard (Sprint 2)
+**Known issue:**
+- `@fastify/websocket` is in Docker anonymous volume (installed via `docker exec`). If API container is
+  fully destroyed, run `docker compose exec api npm install @fastify/websocket` to restore.
+  Long-term fix: switch API to prod build (Sprint 3).
 
 **VPS credentials (.env):**
 - `ICECAST_SOURCE_PASSWORD=radioSource2025`
@@ -143,7 +143,7 @@ The station runs continuously — when no live DJ is connected, Liquidsoap plays
 - `API_SECRET=radioApiSecret2025`
 
 **What's next:**
-- Sprint 2: Browser DJ tool, SSL/HTTPS, listener stats, Telegram summaries, QA sign-off
+- Sprint 3: Admin dashboard, DJ management, show scheduling, prod API build
 
 ## 9. Security Rules
 

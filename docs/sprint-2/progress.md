@@ -1,7 +1,7 @@
 # Sprint 2 — Progress
 
 > **Branch:** `feature/sprint-2`
-> **Status:** 🔨 In progress — code complete, deploying
+> **Status:** ✅ Complete — deployed to https://lekkerkuier.com
 
 ## Phase 1: SSL / HTTPS
 
@@ -48,10 +48,10 @@
 
 | # | Task | Status |
 |---|------|--------|
-| 17 | Full VPS playthrough | 🔨 In progress |
-| 18 | File bugs as GitHub Issues | 🔨 In progress |
-| 19 | Write QA sign-off doc | ⬜ Pending |
-| 20 | Fix blockers/majors | ⬜ Pending |
+| 17 | Full VPS playthrough | ✅ Done |
+| 18 | File bugs as GitHub Issues | ✅ Done (known issue documented in done.md) |
+| 19 | Write QA sign-off doc | ✅ Done (docs/sprint-2/done.md) |
+| 20 | Fix blockers/majors | ✅ Done |
 
 ## Notes
 
