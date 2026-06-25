@@ -58,7 +58,26 @@
 | `tests/package.json` | Playwright test runner config |
 | `playwright.config.ts` | Multi-browser: Chromium, Firefox, WebKit, Mobile Chrome |
 
-## Manual Setup Required
+## VPS Deployment Fixes (applied after code phase)
+
+The following bugs were discovered and fixed during live deployment on lekkerkuier.com. All fixes are committed to `feature/sprint-1`.
+
+| Fix | Commit | Root Cause |
+|-----|--------|------------|
+| `npm ci` → `npm install` in all 4 Dockerfiles | `fdff1bc` | No `package-lock.json` for API on Windows (better-sqlite3 native build) |
+| Icecast2 runs as non-root user via `gosu icecastrun` | `bced1ca` | Icecast2 refuses to start as root |
+| Liquidsoap `getenv()` → `sed`-based entrypoint substitution | `5f73680` | Liquidsoap 2.3.0 `getenv(default=...)` broken |
+| `crossfade()` returns fallible → wrap with `mksafe()` | `ca5a947` | Liquidsoap 2.x `crossfade` is fallible during transitions |
+| `reopen_on_metadata` must be `fun(_) -> bool` | `0e2554b` | Liquidsoap 2.x API changed from bool to predicate |
+| Disabled `output.file` recording temporarily | `95927d0` | `/recordings` permissions (re-enabled after `chmod 777`) |
+| Nginx: add `resolver 127.0.0.11` | `a51a3e8` | Docker DNS not resolved at nginx startup |
+| Nginx: `@spa_fallback` `proxy_pass` cannot have URI part | `1237676` | nginx rule: named locations can't use URI in proxy_pass |
+| API healthcheck: use `node` http module | `4b7e2a2` | `node:20-alpine` has no `curl` or `wget` |
+| Web: switch to `Dockerfile.prod` (static build) | `03525fa` | Vite 5 host security rejects external `Host` header |
+| `vite.config.ts` `allowedHosts: true` | `04409b9` | Attempted Vite fix (superseded by Dockerfile.prod switch) |
+| Re-enable `output.file` recording | `f9b14bd` | Fixed by `chmod 777 /var/lib/docker/volumes/radio_recordings/_data` |
+
+
 
 ### 1. Fallback Playlist (required for Liquidsoap to start)
 ```bash
